@@ -9,10 +9,6 @@ const links = [
     href: '/',
     label: 'Home',
   },
-  {
-    href: '/blog',
-    label: 'Blog',
-  },
 ]
 
 export function ResponsiveNavbar() {
@@ -22,29 +18,6 @@ export function ResponsiveNavbar() {
     <>
       <nav className="w-full px-4 text-black mb-6">
         <div className="mx-auto py-0 flex items-center justify-between">
-          {/* {
-            !isOpen &&
-            <div className="hidden lg:flex gap-6">
-              {links.map((link, index) => (
-                <Link
-                  key={index}
-                  href={link.href}
-                  className="hover:text-gray-600"
-                  {...link.linkOptions}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          }
-
-          <button
-            className="lg:hidden"
-            onClick={() => setIsOpen(true)}
-          >
-            <Menu size={24} />
-          </button> */}
-
           <button
             className={`${isOpen? "bg-gray-200":""} flex gap-2 hover:bg-gray-200 p-2 mx-[-0.5rem] text-neutral-600 rounded`}
             onClick={() => setIsOpen(!isOpen)}
