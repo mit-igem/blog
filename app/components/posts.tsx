@@ -4,7 +4,9 @@ import { formatDate, getBlogPosts } from '@/(blog)/utils'
 export function BlogPosts() {
   let allBlogs = getBlogPosts()
 
-  allBlogs = allBlogs.filter((blog) => blog.metadata.published)
+  if (process.env.NODE_ENV === 'production') {
+    allBlogs = allBlogs.filter((blog) => blog.metadata.published)
+  }
 
   return (
     <div>
