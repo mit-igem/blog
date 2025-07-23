@@ -1,0 +1,190 @@
+---
+title: 'Onboarding'
+publishedAt: '2025-06-30'
+summary: 'Technical onboarding.'
+published: true
+---
+
+# macOS setup
+
+1. Install [iTerm2](https://iterm2.com/). iTerm2 is a terminal emulator that is more user-friendly and feature-rich than the built-in Terminal app.
+2. Install [Homebrew](https://brew.sh). Homebrew is a macOS package manager that will let you easily install many useful command line tools.
+3. Install the Xcode Command Line Tools:
+    ```bash title="bash"
+    xcode-select --install
+    ```
+4. [Install Jujutsu](https://jj-vcs.github.io/jj/latest/install-and-setup/).
+
+    ```bash title="bash"
+    brew install jj
+    ```
+
+# Windows setup
+
+1. Install [Windows Subsystem for Linux 2 (WSL 2)](https://learn.microsoft.com/en-us/windows/wsl/install).
+2. [Install Jujutsu](https://jj-vcs.github.io/jj/latest/install-and-setup/). Download the prebuilt binary and place it in `/usr/local/bin`.
+
+    ```bash title="bash"
+    # https://github.com/jj-vcs/jj/releases/tag/v0.31.0
+    mkdir -p /tmp/jj-install
+    wget -O /tmp/jj-install/jj-linux.tar.gz https://github.com/jj-vcs/jj/releases/download/v0.31.0/jj-v0.31.0-x86_64-unknown-linux-musl.tar.gz
+    tar -xvf /tmp/jj-install/jj-linux.tar.gz -C /tmp/jj-install
+    sudo mv /tmp/jj-install/jj /usr/local/bin
+    ```
+
+# General setup
+
+1. Sign up for a [Github](https://github.com/) account if you don't have one already.
+2. Create an SSH private/public key pair. This will create two files:
+
+    - a **public** key `~/.ssh/id_ed25519.pub`, and
+    - a **private** key `~/.ssh/id_ed25519`.<br/>
+
+    You don't need to encrypt your **private key** with a passphrase when prompted; just make sure you never share its contents. Your **public key** is the only value that you share to services like Github.
+
+    ```bash title="bash"
+    ssh-keygen -t ed25519 -C "$USER@$HOST"
+    ```
+
+3. Add your public SSH key to your Github account: https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account. This will let you push (upload) and pull (download) code from Github without your username and password.
+
+4. Install the [Fast Node Manager (`fnm`)](https://github.com/Schniz/fnm) by running the following:
+
+    ```bash
+    curl -fsSL https://fnm.vercel.app/install | bash
+    fnm install 20.18.3
+    fnm default 20.18.3
+    ```
+
+5. Configure Jujutsu.
+
+    ```bash
+    jj config set --user user.name "<Your name>"
+    jj config set --user user.email "<Email you use on Github>"
+    ```
+
+# Jujutsu basics
+
+[Jujutsu (`jj`)](https://github.com/jj-vcs/jj) is a new(ish) version control system (VCS) that is much more user-friendly and intuitive than Git. Importantly, Jujutsu uses Git as a _storage layer_ which means we can still use Github as our [remote](https://git-scm.com/book/ms/v2/Git-Basics-Working-with-Remotes) repository.
+
+Go through [this tutorial](https://jj-vcs.github.io/jj/latest/tutorial/) to get a basic understanding of how to use Jujutsu.
+
+# Making changes to the blog
+
+1. Request access to the repository (https://github.com/mit-igem/blog) via email or Slack. Provide your Github username in the request.
+2. After you are granted access to the repository, clone this blog. This downloads a complete copy of the repository to your computer, where you can make and save edits, and eventually push (upload) those edits to Github, where they'll be compiled and published.
+
+    ```bash title="bash"
+    jj git clone git@github.com:mit-igem/blog.git
+    ```
+
+3. The first time you clone the repository, you will need to install the Node.js dependencies in order to run the live preview.
+
+    ```bash title="bash"
+    cd blog
+    npm install
+    ```
+
+4. Start the live preview server of the blog:
+
+    ```bash title="bash"
+    npm run dev
+    ```
+
+5. Make edits to the blog posts under `app/(blog)/posts`. The name of the `.mdx` file (e.g. `onboarding.mdx`) will because the blog post's "slug" (the URL link). Folders are ignored and are only present for organization.
+
+    Every post should contain a **`frontmatter`** which provides metadata about the post:
+
+    ```yaml title="yaml"
+    ---
+    title: 'The title of your post'
+    publishedAt: '2025-07-14' # Date as a string in YYYY-MM-DD format
+    summary: 'A summary of your post.'
+    published: true # false if the post is still in draft mode; true if the post is public
+    ---
+    ```
+
+    The rest of the post is written in [MDX](https://mdxjs.com/), an extension of [Markdown](https://www.markdownguide.org/). For now, you can simply use Markdown to write your posts.
+
+    Be sure to check how your post looks, typically by viewing it at `http://localhost:3000/<SLUG>` (e.g. `http://localhost:3000/onboarding`). Your server may be running on a different port than `3000`; check your terminal output to see which port you're using.
+
+    You can include images in your post by including them in the folder with your post.
+
+    For example: ![The MIT logo (alt text)](./mit-logo.png)
+
+    To make sure that the blog post loads quickly, compress your images so that they are under 1 MB in size.
+
+6. When you're satisfied with your edits, commit and push your changes.
+
+    ```bash title="bash"
+    jj commit -m "Description of the edits you made"
+    jj bookmark move -f main -t @-
+    jj git push
+    ```
+
+7. If someone else has pushed updates to the repository, you will need to [merge](https://steveklabnik.github.io/jujutsu-tutorial/branching-merging-and-conflicts/merging.html#merging-branches) your changes with theirs before you can push.
+
+    ```console title="Before the merge: looking at the current state"
+    $ jj git fetch
+    $ jj log
+    @  kqmyxtoo mattfeng@mit.edu 2025-07-14 20:36:47 ff3557ea
+    │  (empty) (no description set)
+    ○  vxzuolrr mattfeng@mit.edu 2025-07-14 20:36:47 main?? cc20b53a
+    │  edit README
+    │ ◆  kzkmyrut mattfeng@mit.edu 2025-07-14 17:40:20 main?? main@origin 90f88175
+    ╭─┤  merge edits
+    │ │
+    │ ~
+    │
+    ◆  kyxzwkyu mattfeng@mit.edu 2025-07-14 17:27:01 0d07d961
+    │  fix typos
+    ~
+    ```
+
+    ```console title="Performing the merge: combining our edits (vxzuolrr; @-) with the most current edits others made (kzkmyrut; main@origin)"
+    $ jj new v kz
+    Working copy  (@) now at: nxzqpzrq d7256267 (conflict) (empty) (no description)
+    Parent commit (@-)      : vxzuolrr cc20b53a main?? | edit README
+    Parent commit (@-)      : kzkmyrut 90f88175 main?? main@origin | merge edits
+    Added 0 files, modified 1 files, removed 0 files
+    Warning: There are unresolved conflicts at these paths:
+    README.md    2-sided conflict
+    ```
+
+    Because there is a **merge conflict** (i.e. edits overlap and therefore cannot be automatically resolved) in `README.md`, we have to manually modify `README.md` so that it contains our desired final state for the file.
+
+    ```console title="Before our edits"
+    $ cat README.md
+    # testing out Jujutsu
+    <<<<<<< Conflict 1 of 1
+    %%%%%%% Changes from base to side #1
+    +
+    +I made some more edits.
+    +++++++ Contents of side #2
+
+    - TODO
+        - [ ] try out rebase
+        - [ ] try out merge
+        - [ ] try out merge conflicts
+    >>>>>>> Conflict 1 of 1 ends
+    ```
+
+    ```console title="After our edits"
+    $ cat README.md
+    # testing out Jujutsu
+
+    I made some more edits.
+
+    - TODO
+        - [ ] try out rebase
+        - [ ] try out merge
+        - [ ] try out merge conflicts
+    ```
+
+    Finally, we can commit our merge, update the `main` bookmark (i.e. the `main` branch on Github), and push our changes to Github.
+
+    ```bash
+    jj commit -m "finish merge"
+    jj bookmark move -f main -t @-
+    jj git push
+    ```
